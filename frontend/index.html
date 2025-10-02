@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreetPass</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+</head>
+<body>
+    <div id="app">
+        <!-- Setup/Login -->
+        <div id="setup-page" class="page">
+            <h1>StreetPass</h1>
+            <div id="login-form">
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <button onclick="handleLogin()">Login</button>
+                <button onclick="handleRegister()">Register</button>
+            </div>
+        </div>
+
+        <!-- Main App (hidden until logged in) -->
+        <div id="main-app" class="page hidden">
+            <nav>
+                <button onclick="showPage('profile')">Profile</button>
+                <button onclick="showPage('scan')">Scan QR</button>
+                <button onclick="showPage('friends')">Friends</button>
+            </nav>
+
+            <!-- Profile -->
+            <div id="profile-page" class="subpage">
+                <h2>Profile</h2>
+                <div id="profile-info"></div>
+                <img id="avatar-preview" class="avatar large">
+                <input type="file" id="avatar-upload" accept="image/*">
+                <button onclick="uploadAvatar()">Update Avatar</button>
+                <button onclick="showQR()">Show My QR</button>
+                <div id="qr-display"></div>
+            </div>
+
+            <!-- Scan -->
+            <div id="scan-page" class="subpage hidden">
+                <h2>Scan QR Code</h2>
+                <video id="qr-video"></video>
+                <div id="scan-status"></div>
+            </div>
+
+            <!-- Friends -->
+            <div id="friends-page" class="subpage hidden">
+                <h2>Friends</h2>
+                <div id="friends-list"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>
