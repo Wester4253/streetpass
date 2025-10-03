@@ -1,13 +1,27 @@
 [Unit]
-Description=StreetPass FastAPI Service
+Description=StreetPass Full Stack (Backend + Frontend)
 After=network.target
 
 [Service]
-User=www-data
-WorkingDirectory=/opt/streetpass
-ExecStart=/opt/streetpass/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+Type=simple
+WorkingDirectory=/root/StreetPass/streetpass
+
+ExecStart=/bin/bash -c '
+  # Backend
+  cd /root/StreetPass/streetpass/backend
+  source venv/bin/activate
+  nohup uvicorn main:app --host 0.0.0.0 --port 8000 > /root/backend.log 2>&1 &
+
+  # Frontend
+  cd /root/StreetPass/streetpass/frontend
+  nohup python3 -m http.server 8080 --bind 0.0.0.0 > /root/frontend.log 2>&1 &
+
+  # Wait to keep service alive
+  wait
+'
+
 Restart=always
-EnvironmentFile=/opt/streetpass/.env
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
