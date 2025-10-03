@@ -1,0 +1,20 @@
+[Unit]
+Description=StreetPass Frontend Service
+After=network.target streetpass-backend.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=streetpass
+Group=streetpass
+WorkingDirectory=/opt/streetpass/frontend
+Environment="PYTHONUNBUFFERED=1"
+EnvironmentFile=/opt/streetpass/.env
+ExecStart=/opt/streetpass/backend/venv/bin/python server.py /opt/streetpass/frontend
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/streetpass/frontend.log
+StandardError=append:/var/log/streetpass/frontend.log
+
+[Install]
+WantedBy=multi-user.target

@@ -2,62 +2,72 @@
 
 A lightweight "StreetPass"-style Progressive Web App with FastAPI backend.
 
-## Project Structure
+## Architecture
 
-```
-StreetPass/
-├── backend/           # Python FastAPI backend
-│   ├── app/          # Application code
-│   ├── tests/        # Test files
-│   ├── avatars/      # User avatar storage
-│   ├── setup.sh      # Setup script
-│   └── ...          # Other backend files
-└── frontend/         # Static frontend files
-    ├── index.html
-    ├── app.js
-    ├── styles.css
-    ├── manifest.json
-    └── icons/        # App icons
+- Backend: FastAPI + SQLite (runs on port 8010)
+- Frontend: Custom Python HTTP server (runs on port 8080)
+- Deployment: Systemd services with proper user isolation
+
+## Installation
+
+1. Install system dependencies:
+```bash
+sudo apt-get update
+sudo apt-get install python3.11 python3.11-venv python3-pip imagemagick libsqlite3-dev
 ```
 
-## Quick Start
-
-1. Install Debian/Ubuntu system dependencies:
-   ```bash
-   sudo apt-get update
-   sudo apt-get install python3.11 python3.11-venv python3-pip imagemagick libsqlite3-dev
-   ```
-
-2. Run the setup script:
-   ```bash
-   cd backend
-   sudo ./setup.sh
-   ```
+2. Run the installation script:
+```bash
+sudo ./install.sh
+```
 
 This will:
-- Install all dependencies
+- Create service user and directories
 - Set up Python virtual environment
-- Generate app icons
-- Initialize database
-- Start the server
+- Install dependencies
+- Configure systemd services
+- Generate secure keys
+- Start both services
 
-The app will be available at http://localhost:8000
+## Service Management
 
-## Manual Setup
+Backend service:
+```bash
+sudo systemctl status streetpass-backend
+sudo systemctl restart streetpass-backend
+sudo journalctl -u streetpass-backend -f
+```
 
-If you prefer to set up manually:
+Frontend service:
+```bash
+sudo systemctl status streetpass-frontend
+sudo systemctl restart streetpass-frontend
+sudo journalctl -u streetpass-frontend -f
+```
 
-1. Set up the backend:
-   ```bash
-   cd backend
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   cp .env.example .env  # Edit this file
-   ./start-prod.sh
-   ```
+## Access
 
-2. The frontend is static files served by the backend, no separate setup needed.
+- Frontend: http://localhost:8080
+- Backend API: http://localhost:8010
+- Logs: /var/log/streetpass/
+
+## Configuration
+
+The `.env` file at `/opt/streetpass/.env` controls both services:
+- Backend host/port
+- Frontend host/port
+- Database location
+- JWT secrets
+- CORS settings
+- File size limits
+
+## Security
+
+- Services run as unprivileged 'streetpass' user
+- Automatic port retry on conflicts
+- Proper file permissions
+- Separate log files
+- Environment variable isolation
 
 ## Environment Variables
 See `.env.example` for all options. Set `SECRET_KEY`, `DATABASE_URL`, allowed hosts, etc.
