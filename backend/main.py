@@ -1,14 +1,15 @@
-import os
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from app.core.config import settings, init_directories
+from app.core.config import Settings, settings
 from app.core.middleware import RateLimiter
 from app.db.session import init_db
 from app.api import auth, users, friends
 
+# Initialize FastAPI app
 app = FastAPI(
     title="StreetPass",
     version="1.0.0",
@@ -43,7 +44,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 # Static files
-app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+app.mount("/", StaticFiles(directory=settings.STATIC_DIR, html=True), name="static")
 
 # Routers
 app.include_router(auth.router, prefix="/api")
@@ -52,8 +53,15 @@ app.include_router(friends.router, prefix="/api")
 
 @app.on_event("startup")
 def on_startup():
-    print(f"\n[StreetPass] Starting server at http://0.0.0.0:8000\n")
-    init_directories()
+    print(f"\n[StreetPass] Starting server at http://{settings.BACKEND_HOST}:{settings.BACKEND_PORT}\n")
+    print(f"Environment: {settings.ENV}")
+    print(f"Database: {settings.DATABASE_URL}")
+
+    # Create required directories
+    Path(settings.AVATAR_DIR).mkdir(parents=True, exist_ok=True)
+    Path(settings.STATIC_DIR).mkdir(parents=True, exist_ok=True)
+
+    # Initialize database
     init_db()
 
 @app.get("/api/health")
